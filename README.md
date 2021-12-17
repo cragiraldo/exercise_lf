@@ -1,6 +1,8 @@
 # exercise_lf
 
-This resolucion from exercise form document [LF DevOps Execise.pdf](media/LFDevOpsExercise.pdf)
+This resolucion from exercise form document  
+
+![LF DevOps Execise.pdf](media/LFDevOpsExercise.pdf)
 
 ## Problem 1  
 - architecture  
