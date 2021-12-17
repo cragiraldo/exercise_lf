@@ -4,4 +4,4 @@ This resolucion from exercise form document [LF DevOps Execise.pdf](https://gith
 
 ## Problem 1  
 - architecture  
-![test](https://github.com/cragiraldo/exercise_lf/blob/da099edcd339eb630dba6fd680ea2a5ed70b6186/exercise_lf_arq-monolithic.drawio.png)
+![test](exercise_lf_arq-monolithic.drawio.png)
