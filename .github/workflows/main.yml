@@ -28,7 +28,4 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: |
-          ls -la
-          sudo apt update
-          sudo aws help
-          sudo docker --version
+          docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
