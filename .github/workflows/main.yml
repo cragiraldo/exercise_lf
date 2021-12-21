@@ -28,4 +28,4 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: |
-          docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
+          docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:$GITHUB_JOB
