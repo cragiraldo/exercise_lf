@@ -29,4 +29,5 @@ jobs:
       - name: Run a one-line script
         run: |
           ls -la
-          sudo apt update
+          apt update
+          apt install -y curl
