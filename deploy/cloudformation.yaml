@@ -1,0 +1,292 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  'Template deploy'  
+Parameters:
+  appName:
+    Description: 'Name application'
+    Type: String
+  Environment:
+    Description: 'name environment'
+    Type: String
+  DomainName:
+    Description: 'dns record'
+    Type: String
+
+Mappings: 
+  SubnetConfig:
+    VPC:
+      CIDR: '10.0.0.0/16'
+    subNet1:
+      CIDR: '10.0.0.0/24'
+    subNet2:
+      CIDR: '10.0.1.0/24'
+
+Resources:
+  ecr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join [ "-", [is, !Ref appName, !Ref Environment]]
+      Tags:
+        - Key: 'name'
+          Value: !Join ["-", [is, !Ref appName, !Ref Environment]] 
+
+  cloudwachGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
+
+  ecsRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        RoleName: !Join [ "-", [ ecs, is, !Ref appName, policy, !Ref Environment]]
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Action:
+                - 'sts:AssumeRole'
+              Effect: Allow
+              Principal:
+                Service:
+                  - "ecs-tasks.amazonaws.com"
+
+  ecsPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join [ "-", [ ecs, is, !Ref appName, policy, !Ref Environment] ]
+      Roles:
+        - !Ref ecsRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'logs:CreateLogStream'
+              - 'logs:CreateLogGroup'
+            Effect: Allow
+            Resource:
+              - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group*'
+  ecsSG:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupName: !Join ["-",[is, securitygroup, !Ref appName, !Ref Environment]]
+        GroupDescription: 'Enable Port communication'
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 443
+            ToPort: 443
+            CidrIp: 0.0.0.0/0
+          - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            CidrIp: 0.0.0.0/0 
+
+  ecsCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: !Join [ "-", [ is, ecs, integration, service, !Ref appName, !Ref Environment ]]
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+
+  taskDefinition: 
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Join [ "-", [ is, task, !Ref appName, !Ref Environment ]]
+      TaskRoleArn: !GetAtt ecsRole.Arn
+      ExecutionRoleArn: !GetAtt ecsRole.Arn
+      NetworkMode: 'awsvpc'
+      Cpu: 512
+      Memory: 1024
+      RequiresCompatibilities:
+        - 'FARGATE'
+      ContainerDefinitions: 
+        - Name: !Join ["-", [!Ref appName, !Ref Environment]]
+          Image:  nginx
+          # Image: !Join [":" ,[!GetAtt ecr.RepositoryUri, !Ref Environment]]
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+              HostPort: 80
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: !Ref cloudwachGroup
+              awslogs-region: !Sub ${AWS::Region}
+              awslogs-stream-prefix: 'ecs'
+  ecsService:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - LoadBalancerListenerHttp
+      - LoadBalancerListenerHttps
+    Properties:
+      ServiceName: !Join ["-",[is, service, !Ref appName, !Ref Environment]]
+      LoadBalancers:
+        - ContainerName: !Join ["-", [!Ref appName, !Ref Environment]]
+          ContainerPort: 80
+          TargetGroupArn: !Ref AlbTargetGroup
+      Cluster: !Ref ecsCluster
+      DesiredCount: 1
+      LaunchType: 'FARGATE'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !Ref ecsSG
+          Subnets:
+            - !Ref subNet1
+            - !Ref subNet2
+      TaskDefinition: 
+        !Ref taskDefinition
+
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "external facing"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0      
+
+  AplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn:
+      - VPC
+    Properties:
+      Type: application
+      Name: !Join [ "-", [ is, alb, !Ref appName, !Ref Environment] ]
+      Subnets:
+        - !Ref subNet1
+        - !Ref subNet2
+      SecurityGroups: 
+        - !Ref AlbSecurityGroup
+      Scheme: internet-facing 
+
+  LoadBalancerListenerHttp:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref AplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref AlbTargetGroup
+
+  LoadBalancerListenerHttps:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref AplicationLoadBalancer
+      Certificates:
+        - CertificateArn: !Ref CertificateManagerCertificate
+      Port: 443
+      Protocol: HTTPS
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref AlbTargetGroup
+
+  AlbTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Join [ "-", [ is, alb-trg, !Ref appName, !Ref Environment]] 
+      VpcId: !Ref VPC
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip 
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR'] 
+
+  subNet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+         Fn::Select:
+         - 0
+         - Fn::GetAZs: {Ref: 'AWS::Region'}
+      VpcId: !Ref 'VPC'
+      CidrBlock: !FindInMap ['SubnetConfig', 'subNet1', 'CIDR']
+      MapPublicIpOnLaunch: true
+  subNet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+         Fn::Select:
+         - 1
+         - Fn::GetAZs: {Ref: 'AWS::Region'}
+      VpcId: !Ref 'VPC'
+      CidrBlock: !FindInMap ['SubnetConfig', 'subNet2', 'CIDR']
+      MapPublicIpOnLaunch: true
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  GatewayAttachement:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref 'VPC'
+      InternetGatewayId: !Ref 'InternetGateway'
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref 'VPC'
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachement
+    Properties:
+      RouteTableId: !Ref 'PublicRouteTable'
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref 'InternetGateway'
+      
+  subNet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref subNet1
+      RouteTableId: !Ref PublicRouteTable
+
+  subNet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref subNet2
+      RouteTableId: !Ref PublicRouteTable
+
+  CertificateManagerCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+
+  Route53RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Sub '${DomainName}.'
+      RecordSets:
+      - Name: !Ref DomainName
+        Type: A
+        AliasTarget:
+          DNSName: !GetAtt AplicationLoadBalancer.DNSName
+          EvaluateTargetHealth: false
+          HostedZoneId: !GetAtt AplicationLoadBalancer.CanonicalHostedZoneID
+      - Name: !Sub 'www.${DomainName}'
+        Type: A
+        AliasTarget:
+          DNSName: !GetAtt AplicationLoadBalancer.DNSName
+          EvaluateTargetHealth: false
+          HostedZoneId: !GetAtt AplicationLoadBalancer.CanonicalHostedZoneID
+
+Outputs:
+  ecrRepositoryUri:
+    Description: 'Identificacion Uri del Repositorio'
+    Value: !Ref ecr

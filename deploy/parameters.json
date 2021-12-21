@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "appName",
+        "ParameterValue": "lf-app"
+    },
+    {
+        "ParameterKey": "Environment",
+        "ParameterValue": "pdn"
+    },
+    {
+        "ParameterKey": "DomainName",
+        "ParameterValue": "craldo.com"
+    }
+]
