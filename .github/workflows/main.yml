@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CD
 
 # Controls when the workflow will run
 on:
@@ -30,4 +30,5 @@ jobs:
         run: |
           ls -la
           sudo apt update
-          aws --version    
+          sudo aws help
+          sudo docker --version
