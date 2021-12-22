@@ -30,12 +30,10 @@ jobs:
         run: |
           docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
 
-      - uses: docker://ghcr.io/kciter/aws-ecr-action:latest
+      - uses: hands-lab/push-ecr-action@v1
         with:
-          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          repo: 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn
-          region: ${{ secrets.AWS_REGION }}
-          tags: latest
-          create_repo: true
+          image: 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
