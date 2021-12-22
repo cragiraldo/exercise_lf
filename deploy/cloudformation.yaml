@@ -24,12 +24,12 @@ Mappings:
     subNet2:
       CIDR: '10.0.1.0/24'
 
-Resources:
+Resources: 
 
   cloudwachGroup:
-      Type: AWS::Logs::LogGroup
-      Properties:
-        LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
 
   ecsRole:
       Type: 'AWS::IAM::Role'
@@ -60,6 +60,10 @@ Resources:
             Effect: Allow
             Resource:
               - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group*'
+          - Action:
+              - 'ecr:*'
+            Effect: Allow
+            Resource: '*'    
   ecsSG:
       Type: AWS::EC2::SecurityGroup
       Properties:
@@ -99,7 +103,7 @@ Resources:
         - 'FARGATE'
       ContainerDefinitions: 
         - Name: !Join ["-", [!Ref appName, !Ref Environment]]
-          Image: '422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest'
+          Image: 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
           Essential: true
           PortMappings:
             - ContainerPort: 80

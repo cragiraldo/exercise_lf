@@ -31,4 +31,8 @@ This resolucion from exercise form document [LFDevOpsExecise.pdf](media/LFDevOps
 - with a vpn connection, a bastion server is exposed where an ec2 instance is reached that has a role that can assume the reading of the database
 
 ### answer question 9
-- From AWS a VPN connection is enabled using the 'Client VPN Endpoints' service, for the endpoint configuration the connections which are routed are defined, the client can have authentication by third parties or by certificate. Once the service is configured, the client is downloaded and the configuration file must be loaded. for Linux computers you can use the 'OpenVPN' agent
+- From AWS a VPN connection is enabled using the 'Client VPN Endpoints' service, for the endpoint configuration the connections which are routed are defined, the client can have authentication by third parties or by certificate. Once the service is configured, the client is downloaded and the configuration file must be loaded. for Linux computers you can use the 'OpenVPN' agent.
+
+## Problem 2
+
+- For this point i create a IaC in Cloudformation and cluster ECS Fargatein the folder [deploy](deploy)
