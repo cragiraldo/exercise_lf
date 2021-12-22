@@ -35,4 +35,19 @@ This resolucion from exercise form document [LFDevOpsExecise.pdf](media/LFDevOps
 
 ## Problem 2
 
-- For this point i create a IaC in Cloudformation and cluster ECS Fargatein the folder [deploy](deploy)
+- The IaC was created in cloudformation and the deployment pipeline in GitHub Actions.
+
+### Details Cloudformation
+- path IaC [deploy](deploy/cloudformation.yaml)  
+- IaC build a VPC, Subnets, Internet Gateway,cluster ecr, cluster ecs, elb, create dns records, crate certificate https, expose nginx container with custome index.html  
+
+![Portal](media/cloudformationportal.png)  
+![stack](media/stackcloudformation.png)
+### Details Pipeline  
+- path Pipeline [GitHubActions](.github/workflows/main.yml)  
+- The Pipeline runs through direct commits to the approved branch or pull request  
+- Pipeline build Docker container by Dockerfile, create aws ECR, push build container and deploy stack cloudformation  
+
+![pipeline](media/pipeline1.png)  
+![secretspipeline](media/secretspipeline.png)
+
