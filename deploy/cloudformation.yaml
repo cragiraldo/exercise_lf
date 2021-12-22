@@ -118,7 +118,7 @@ Resources:
     Properties:
       ServiceName: !Join ["-",[is, service, !Ref appName, !Ref Environment]]
       LoadBalancers:
-        - ContainerName: !Join ["-", [!Ref appName, !Ref Environment]]
+        - ContainerName: '422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest'
           ContainerPort: 80
           TargetGroupArn: !Ref AlbTargetGroup
       Cluster: !Ref ecsCluster
