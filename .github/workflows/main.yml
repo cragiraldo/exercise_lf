@@ -33,7 +33,7 @@ jobs:
       - uses: hands-lab/push-ecr-action@v1
         with:
           image: $(secret.AWS_ACCOUNT_ID).dkr.ecr.$(secret.AWS_REGION).amazonaws.com/is-lf-app-pdn:latest
-          aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secret.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secret.AWS_REGION }}
-          aws-account-id: ${{ secret.AWS_ACCOUNT_ID }}
+          aws-access-key-id: $(secret.AWS_ACCESS_KEY_ID)
+          aws-secret-access-key: $(secret.AWS_SECRET_ACCESS_KEY)
+          aws-region: $(secret.AWS_REGION)
+          aws-account-id: $(secret.AWS_ACCOUNT_ID)
