@@ -284,8 +284,3 @@ Resources:
           DNSName: !GetAtt AplicationLoadBalancer.DNSName
           EvaluateTargetHealth: false
           HostedZoneId: !GetAtt AplicationLoadBalancer.CanonicalHostedZoneID
-
-Outputs:
-  ecrRepositoryUri:
-    Description: 'Identificacion Uri del Repositorio'
-    Value: !Ref ecr
