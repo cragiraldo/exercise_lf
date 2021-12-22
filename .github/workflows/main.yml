@@ -53,4 +53,4 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
          name: stack-deploy-pdn
-         template: .deploy/cloudformation.yaml
+         template: ./deploy/cloudformation.yaml
