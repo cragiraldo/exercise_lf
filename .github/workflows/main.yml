@@ -34,7 +34,7 @@ jobs:
 
       - uses: int128/create-ecr-repository-action@v1
         with:
-          repository: is-lf-app-pdn        
+          repository: is-lf-app-pdn
         
       - name: Login to Amazon ECR
         id: login-ecr
