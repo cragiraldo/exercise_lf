@@ -22,13 +22,13 @@ Mappings:
       CIDR: '10.0.1.0/24'
 
 Resources:
-  ecr:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: !Join [ "-", [is, !Ref appName, !Ref Environment]]
-      Tags:
-        - Key: 'name'
-          Value: !Join ["-", [is, !Ref appName, !Ref Environment]] 
+  # ecr:
+  #   Type: AWS::ECR::Repository
+  #   Properties:
+  #     RepositoryName: !Join [ "-", [is, !Ref appName, !Ref Environment]]
+  #     Tags:
+  #       - Key: 'name'
+  #         Value: !Join ["-", [is, !Ref appName, !Ref Environment]] 
 
   cloudwachGroup:
     Type: AWS::Logs::LogGroup
