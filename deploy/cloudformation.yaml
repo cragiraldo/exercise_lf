@@ -5,12 +5,15 @@ Parameters:
   appName:
     Description: 'Name application'
     Type: String
+    Default: lf-app
   Environment:
     Description: 'name environment'
     Type: String
+    Default: pdn
   DomainName:
     Description: 'dns record'
     Type: String
+    Default: craldo.com
 
 Mappings: 
   SubnetConfig:
@@ -22,15 +25,8 @@ Mappings:
       CIDR: '10.0.1.0/24'
 
 Resources:
-  # ecr:
-  #   Type: AWS::ECR::Repository
-  #   Properties:
-  #     RepositoryName: !Join [ "-", [is, !Ref appName, !Ref Environment]]
-  #     Tags:
-  #       - Key: 'name'
-  #         Value: !Join ["-", [is, !Ref appName, !Ref Environment]] 
 
-  cloudwachGroup:
+ cloudwachGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
@@ -103,7 +99,7 @@ Resources:
         - 'FARGATE'
       ContainerDefinitions: 
         - Name: !Join ["-", [!Ref appName, !Ref Environment]]
-          Image: !Join [":" ,[!GetAtt ecr.RepositoryUri, latest]]
+          Image: 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
           Essential: true
           PortMappings:
             - ContainerPort: 80
