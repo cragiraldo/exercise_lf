@@ -45,7 +45,7 @@ This resolucion from exercise form document [LFDevOpsExecise.pdf](media/LFDevOps
 ![stack](media/stackcloudformation.png)
 ### Details Pipeline  
 - path Pipeline [GitHubActions](.github/workflows/main.yml)  
-- The Pipeline runs through direct commits to the approved branch or pull request  
+- The Pipeline runs through direct commits to the branch or pull request  
 - Pipeline build Docker container by Dockerfile, create aws ECR, push build container and deploy stack cloudformation  
 
 ![pipeline](media/pipeline1.png)  
