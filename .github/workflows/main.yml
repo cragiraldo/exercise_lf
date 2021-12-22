@@ -35,7 +35,7 @@ jobs:
           access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          repo: is-lf-app-pdn
+          repo: 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn
           region: ${{ secrets.AWS_REGION }}
           tags: latest
           create_repo: true
