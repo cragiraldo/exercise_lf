@@ -26,6 +26,14 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Build Dockerfile
         run: |
-          docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:$GITHUB_RUN_ID
+          docker build ./app -t 422235085863.dkr.ecr.us-east-1.amazonaws.com/is-lf-app-pdn:latest
+          
+      - uses: hands-lab/push-ecr-action@v1
+        with:
+          image: ${{ secret.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secret.AWS_REGION }}.amazonaws.com/is-lf-app-pdn:latest
+          aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secret.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secret.AWS_REGION }}
+          aws-account-id: ${{ secret.AWS_ACCOUNT_ID }}

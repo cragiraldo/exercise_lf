@@ -103,8 +103,7 @@ Resources:
         - 'FARGATE'
       ContainerDefinitions: 
         - Name: !Join ["-", [!Ref appName, !Ref Environment]]
-          Image:  nginx
-          # Image: !Join [":" ,[!GetAtt ecr.RepositoryUri, !Ref Environment]]
+          Image: !Join [":" ,[!GetAtt ecr.RepositoryUri, latest]]
           Essential: true
           PortMappings:
             - ContainerPort: 80
