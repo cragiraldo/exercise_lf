@@ -26,10 +26,10 @@ Mappings:
 
 Resources:
 
- cloudwachGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
+  cloudwachGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: !Join ["-", [/ecs/task, is, !Ref appName, !Ref Environment]]
 
   ecsRole:
       Type: 'AWS::IAM::Role'

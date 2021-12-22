@@ -24,6 +24,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        name: Checkout Repository
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -33,6 +34,7 @@ jobs:
           aws-region: us-east-1
 
       - uses: int128/create-ecr-repository-action@v1
+        name: Create ECR
         with:
           repository: is-lf-app-pdn
         
@@ -40,7 +42,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
     
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build Dockerfile and Push ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: is-lf-app-pdn
