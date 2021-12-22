@@ -56,3 +56,4 @@ jobs:
         with:
          name: stack-deploy-pdn
          template: ./deploy/cloudformation.yaml
+         capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
