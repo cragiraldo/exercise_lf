@@ -28,7 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build Dockerfile
         run: |
-          docker build ./app -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/is-lf-app-pdn
+          docker build ./app -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/is-lf-app-pdn:latest
 
       - uses: docker://ghcr.io/kciter/aws-ecr-action:latest
         name: push ecr
@@ -36,7 +36,7 @@ jobs:
           access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          repo: is-lf-app-pdn:latest
+          repo: is-lf-app-pdn
           region: ${{ secrets.AWS_REGION }}
           tags: latest
           create_repo: true
