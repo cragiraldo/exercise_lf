@@ -36,6 +36,8 @@ This resolucion from exercise form document [LFDevOpsExecise.pdf](media/LFDevOps
 ## Problem 2
 
 - The IaC was created in cloudformation and the deployment pipeline in GitHub Actions.
+- infrastructure.  
+![iac_deploy](media/exercise_lf_iac.drawio.png)
 
 ### Details Cloudformation
 - path IaC [deploy](deploy/cloudformation.yaml)  
