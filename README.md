@@ -53,5 +53,3 @@ This resolucion from exercise form document [LFDevOpsExecise.pdf](media/LFDevOps
 ![pipeline](media/pipeline1.png)  
 ![secretspipeline](media/secretspipeline.png)
 
-# end
-
